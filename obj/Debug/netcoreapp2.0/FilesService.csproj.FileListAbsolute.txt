@@ -1,0 +1,10 @@
+f:\לימודים\שנה ג\סמסטר א\עקרונות ויישומי מחשוב ענן\project\FilesService\bin\Debug\netcoreapp2.0\FilesService.deps.json
+f:\לימודים\שנה ג\סמסטר א\עקרונות ויישומי מחשוב ענן\project\FilesService\bin\Debug\netcoreapp2.0\FilesService.runtimeconfig.json
+f:\לימודים\שנה ג\סמסטר א\עקרונות ויישומי מחשוב ענן\project\FilesService\bin\Debug\netcoreapp2.0\FilesService.runtimeconfig.dev.json
+f:\לימודים\שנה ג\סמסטר א\עקרונות ויישומי מחשוב ענן\project\FilesService\bin\Debug\netcoreapp2.0\FilesService.dll
+f:\לימודים\שנה ג\סמסטר א\עקרונות ויישומי מחשוב ענן\project\FilesService\bin\Debug\netcoreapp2.0\FilesService.pdb
+f:\לימודים\שנה ג\סמסטר א\עקרונות ויישומי מחשוב ענן\project\FilesService\obj\Debug\netcoreapp2.0\FilesService.csproj.CoreCompileInputs.cache
+f:\לימודים\שנה ג\סמסטר א\עקרונות ויישומי מחשוב ענן\project\FilesService\obj\Debug\netcoreapp2.0\FilesService.AssemblyInfoInputs.cache
+f:\לימודים\שנה ג\סמסטר א\עקרונות ויישומי מחשוב ענן\project\FilesService\obj\Debug\netcoreapp2.0\FilesService.AssemblyInfo.cs
+f:\לימודים\שנה ג\סמסטר א\עקרונות ויישומי מחשוב ענן\project\FilesService\obj\Debug\netcoreapp2.0\FilesService.dll
+f:\לימודים\שנה ג\סמסטר א\עקרונות ויישומי מחשוב ענן\project\FilesService\obj\Debug\netcoreapp2.0\FilesService.pdb
