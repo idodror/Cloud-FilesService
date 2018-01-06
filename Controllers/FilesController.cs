@@ -13,6 +13,7 @@ using StackExchange.Redis;
 using RawRabbit.Enrichers.MessageContext.Context;
 using RawRabbit.Operations.MessageSequence;
 using RawRabbit;
+using ManageService.Models;
 
 namespace FilesService.Controllers
 {
@@ -24,21 +25,30 @@ namespace FilesService.Controllers
 
         public FilesController (IBusClient _client) {
             client = _client;
-            client.SubscribeAsync<ImageFile, MessageContext>((img, ctx) => {
-                // store image in database;
-                Console.WriteLine("Image id: {0}, fileType: {1}", img._id, img.filetype);
-                return Task.FromResult(0);
+            client.SubscribeAsync<ShareFileNoRev, MessageContext>(async (sfnr, ctx) =>
+            {
+                // download image and upload it with the new user as owner
+                await CopyFile(sfnr);
             });
+        }
+
+        private async Task CopyFile(ShareFileNoRev sfnr)
+        {
+            ImageFile downloadedFile = await DownloadFile(sfnr.imgId);
+            int index = downloadedFile._id.LastIndexOf(':');
+            string newImgId = downloadedFile._id.Substring(0, index + 1);
+            newImgId += sfnr.toUser;
+            downloadedFile._id = newImgId;
+            index = downloadedFile._id.IndexOf(':');
+            downloadedFile._id = downloadedFile._id.Substring(index + 1, downloadedFile._id.Length - 1 - index);
+            await UploadFile(downloadedFile);
+            Console.WriteLine(downloadedFile._id);
+            return;
         }
 
         [HttpGet]
         [Route("/init")]
-        public async void init() {
-            await client.PublishAsync(new ImageFile {
-                filetype = ".jpg",
-                data = "blabla"
-            });
-        }  
+        public void init() { }
 
         [HttpPost]
         [Route("UploadFile")]
@@ -54,7 +64,7 @@ namespace FilesService.Controllers
         [Route("DownloadFile/{id}")]
         public async Task<ImageFile> DownloadFile(string id) {
             var hc = CouchDBConnect.GetClient("files");
-            var response = await hc.GetAsync("/files/imgname:" + id);
+            var response = await hc.GetAsync("/files/" + id);
 
             if (!response.IsSuccessStatusCode) {
                 return null;
