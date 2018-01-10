@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.3" />
+    <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.0" />
     <PackageReference Include="RawRabbit" Version="2.0.0-rc2" />
     <PackageReference Include="RawRabbit.Operations.StateMachine" Version="2.0.0-rc2" />
     <PackageReference Include="RawRabbit.Operations.Subscribe" Version="2.0.0-rc2" />
