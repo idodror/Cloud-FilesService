@@ -63,7 +63,7 @@ namespace FilesService.Controllers
 
         [HttpPost]
         [Route("UploadFile")]
-        public async Task<int> UploadFile([FromBody]ImageFile file)
+        public async Task<String> UploadFile([FromBody]ImageFile file)
         {
             if (VerifyTheToken(file._id))
             {
@@ -72,11 +72,11 @@ namespace FilesService.Controllers
                 
                 Console.WriteLine(response);
 
-                return 1;
+                return "Upload Succeeded";
             }
             else
             {
-                return -1;
+                return "Please login first!";
             }
 
 
@@ -98,10 +98,19 @@ namespace FilesService.Controllers
              }
         }
 
+        public int NthIndexOf(string s, char c, int n)
+        {
+            var takeCount = s.TakeWhile(x => (n -= (x == c ? 1 : 0)) > 0).Count();
+            return takeCount == s.Length ? -1 : takeCount;
+        }
+
         [HttpGet]
         [Route("DownloadFile/{id}")]
         public async Task<ImageFile> DownloadFile(string id) {
-            if (VerifyTheToken(id)){
+            int index1 = NthIndexOf(id, ':', 1);
+            int index2 = NthIndexOf(id, ':', 2);
+            string userId = id.Substring(index1 + 1, index2 - index1 - 1);
+            if (VerifyTheToken(userId)){
 
                 var hc = CouchDBConnect.GetClient("files");
                 var response = await hc.GetAsync("/files/" + id);
@@ -158,7 +167,7 @@ namespace FilesService.Controllers
             if(VerifyTheToken(id)){
                 var hc = CouchDBConnect.GetClient("files");
                 List<ImageFile> imagesList = new List<ImageFile>();
-                var response = await hc.GetAsync("/files/_all_docs?startkey=\"imgname:" + id + "\"&include_docs=true");
+                var response = await hc.GetAsync("/files/_all_docs?startkey=\"userid:" + id + "\"&include_docs=true");
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -173,34 +182,6 @@ namespace FilesService.Controllers
             {
                 return null;
             }
-        }
-
-
-
-        [HttpGet]
-        [Route("Search/{id}/{fileName}")] //search by name of image file (per user)
-        public async Task<IEnumerable<ImageFile>> Search(string id,string fileName) {
-            if(VerifyTheToken(id)){
-                var hc = Helpers.CouchDBConnect.GetClient("files");
-                var response = await hc.GetAsync("/files/_all_docs?startkey=\"imgname:" + id +":file:"+ fileName+ "\"&include_docs=true");
-                List<ImageFile> imagesList = new List<ImageFile>();
-
-                if (!response.IsSuccessStatusCode) {
-                        return null;
-                }
-
-                await GetListFromDB(imagesList, response);
-
-                if(imagesList.Count>0)
-                    return imagesList;
-
-                return null;
-            }
-            else
-            {
-                return null;
-            }
-
         }
 
         private static async Task GetListFromDB(List<ImageFile> imagesList, HttpResponseMessage response)
