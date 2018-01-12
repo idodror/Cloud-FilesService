@@ -7,5 +7,7 @@ namespace FilesService.Models {
         public int ttl { get; set; }
         public DateTime create { get; set; }
 
+        Data() { }
+
     }
 }

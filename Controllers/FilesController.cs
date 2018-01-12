@@ -13,7 +13,6 @@ using StackExchange.Redis;
 using RawRabbit.Enrichers.MessageContext.Context;
 using RawRabbit.Operations.MessageSequence;
 using RawRabbit;
-using ManageService.Models;
 
 namespace FilesService.Controllers
 {
