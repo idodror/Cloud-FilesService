@@ -28,7 +28,7 @@ namespace FilesService.Controllers
             client = _client;
             cachingDB = caching.Connection().GetDatabase();
 
-            client.SubscribeAsync<ShareFileNoRev, MessageContext>(async (sfnr, ctx) =>
+            client.SubscribeAsync<ShareFileNoRev>(async (sfnr) =>
             {
                 // download image and upload it with the new user as owner
                 await CopyFile(sfnr);
@@ -134,15 +134,18 @@ namespace FilesService.Controllers
 
         [HttpDelete]
         [Route("Delete/{id}")]
-        public async Task<int> Delete(string id){
-            if(VerifyTheToken(id)){
+        public async Task<int> Delete(string id) {
+            int index1 = NthIndexOf(id, ':', 1);
+            int index2 = NthIndexOf(id, ':', 2);
+            string userId = id.Substring(index1 + 1, index2 - index1 - 1);
+            if (VerifyTheToken(userId)) {
                 var hc = CouchDBConnect.GetClient("files");
                 ImageFile imageRemove = null;
                 imageRemove = await DownloadFile(id);
 
                 if(imageRemove != null)
                 {
-                    string uri = "/files/imgname:" + id + "?rev=" + imageRemove._rev;
+                    string uri = "/files/" + id + "?rev=" + imageRemove._rev;
                     var response = await hc.DeleteAsync(uri);
 
                     if (!response.IsSuccessStatusCode) {
@@ -167,7 +170,8 @@ namespace FilesService.Controllers
             if(VerifyTheToken(id)){
                 var hc = CouchDBConnect.GetClient("files");
                 List<ImageFile> imagesList = new List<ImageFile>();
-                var response = await hc.GetAsync("/files/_all_docs?startkey=\"userid:" + id + "\"&include_docs=true");
+                var query = "/files/_all_docs?startkey=\"userid:" + id + ":\"&endkey=\"userid:" + id + ":\uffff\"&include_docs=true";
+                var response = await hc.GetAsync(query);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -175,7 +179,7 @@ namespace FilesService.Controllers
                 }
 
                 await GetListFromDB(imagesList, response);
-
+                
                 return imagesList;
             }
             else
