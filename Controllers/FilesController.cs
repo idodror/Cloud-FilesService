@@ -28,25 +28,21 @@ namespace FilesService.Controllers
             client = _client;
             cachingDB = caching.Connection().GetDatabase();
 
-            client.SubscribeAsync<ShareFileNoRev>(async (sfnr) =>
+            client.SubscribeAsync<String>(async (json) =>
             {
                 // download image and upload it with the new user as owner
-                await CopyFile(sfnr);
+                await CopyFile(json);
             });
         }
 
 
-        private async Task CopyFile(ShareFileNoRev sfnr)
+        private async Task CopyFile(String json)
         {
-            ImageFile downloadedFile = await DownloadFile(sfnr.imgId);
-            int index = downloadedFile._id.LastIndexOf(':');
-            string newImgId = downloadedFile._id.Substring(0, index + 1);
-            newImgId += sfnr.toUser;
-            downloadedFile._id = newImgId;
-            index = downloadedFile._id.IndexOf(':');
-            downloadedFile._id = downloadedFile._id.Substring(index + 1, downloadedFile._id.Length - 1 - index);
-            await UploadFile(downloadedFile);
-            Console.WriteLine(downloadedFile._id);
+            JObject obj = JObject.Parse(json);
+            ImageFile downloadedFile = await DownloadFile(obj["imgId"].ToString());
+            downloadedFile._id = obj["toUser"].ToString();
+            ImageFileNoRev fileNoRev = new ImageFileNoRev(downloadedFile);
+             var response = await CouchDBConnect.PostToDB(fileNoRev, "files");
             return;
         }
 
@@ -67,7 +63,7 @@ namespace FilesService.Controllers
         {
             if (VerifyTheToken(file._id))
             {
-                ImageFileNoRev fileNoRev = new ImageFileNoRev(file); //"bla:user:Moris"
+                ImageFileNoRev fileNoRev = new ImageFileNoRev(file);
                 var response = await CouchDBConnect.PostToDB(fileNoRev, "files");
                 
                 Console.WriteLine(response);
